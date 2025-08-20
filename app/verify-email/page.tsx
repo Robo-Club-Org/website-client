@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import Link from "next/link"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com'
 
 export default function VerifyEmailPage() {
   const [email, setEmail] = useState("")

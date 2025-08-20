@@ -19,7 +19,7 @@ export default function HomePage() {
 
 
   const fetchFeaturedProducts = async () => {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/featured`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/products/featured`;
       console.log('Fetching featured products from:', apiUrl);
       try {
         const response = await fetch(apiUrl);

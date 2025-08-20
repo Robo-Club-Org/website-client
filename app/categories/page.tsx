@@ -8,7 +8,7 @@ type Category = {
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const base = process.env.NEXT_PUBLIC_API_URL;
     const res = await fetch(`${base}/products/categories`, { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to fetch categories");
     return await res.json();

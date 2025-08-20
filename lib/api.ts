@@ -36,7 +36,7 @@ export interface Product {
 }
 
 // Base URL for your backend API
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://roboclub-server-70e29f041ab3.herokuapp.com";
 
 // Utility function for authenticated fetch requests
 export async function authenticatedFetch(url: string, options?: RequestInit) {

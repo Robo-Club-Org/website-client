@@ -53,7 +53,7 @@ export default function CheckoutPage() {
 
   const fetchAddresses = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
       const token = localStorage.getItem('token');
 
       const response = await fetch(`${apiBaseUrl}/addresses`, {
@@ -97,7 +97,7 @@ export default function CheckoutPage() {
     setIsLoading(true);
     
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
       const token = localStorage.getItem('token');
 
       const response = await fetch(`${apiBaseUrl}/checkout`, {
