@@ -7,6 +7,8 @@ import { ProductsEmptyState } from "@/components/products/ProductsEmptyState"
 import SearchFiltersBar from "@/components/SearchFiltersBar"
 import { useProductSearch } from "@/hooks/useProductSearch"
 import Pagination from "@/components/Pagination"
+import { UsedProductsJsonLd } from '@/components/used-products-jsonld'
+import { BreadcrumbJsonLd } from '@/components/breadcrumb-jsonld'
 
 interface Product {
   id: string;
@@ -136,13 +138,21 @@ export default function UsedProductsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <UsedProductsJsonLd />
+      <BreadcrumbJsonLd 
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Used Products', url: '/used-products' }
+        ]}
+      />
       <Navigation />
       <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Used Products</h1>
-          <p className="text-gray-600">
-            Browse our collection of second-hand robotics components and electronics
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Used Electronics & Robotics Products</h1>
+          <p className="text-gray-600 max-w-3xl">
+            Browse our collection of second-hand robotics components, development boards, and electronic equipment at discounted prices. 
+            All used products are thoroughly tested by our technicians to ensure quality and reliability.
           </p>
         </div>
 
@@ -186,6 +196,27 @@ export default function UsedProductsPage() {
               endItem={pagination.endItem}
               totalItems={pagination.totalItems}
             />
+            
+            {/* SEO-friendly product category descriptions */}
+            <section className="mt-16 mb-8 bg-white rounded-lg p-6 shadow-sm">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">About Our Used Products</h2>
+              <div className="prose max-w-none text-gray-600">
+                <p>
+                  At RoboClub, we offer a wide range of pre-owned and refurbished electronics and robotics components 
+                  at discounted prices. Each item undergoes thorough testing by our experienced technicians to ensure 
+                  functionality and reliability.
+                </p>
+                <p className="mt-3">
+                  Our collection includes used Arduino boards, Raspberry Pi computers, sensors, motors, electronic components, 
+                  development kits, and other maker supplies. Whether you're a hobbyist, student, or professional looking for 
+                  cost-effective solutions, our used products provide excellent value without compromising on quality.
+                </p>
+                <p className="mt-3">
+                  All used products come with a 14-day warranty and have been tested to meet our quality standards. 
+                  Shop with confidence knowing that each pre-owned item has been carefully inspected before being listed for sale.
+                </p>
+              </div>
+            </section>
           </>
         ) : (
           <ProductsEmptyState 
@@ -199,6 +230,51 @@ export default function UsedProductsPage() {
           />
         )}
       </main>
+      
+      {/* FAQ Section for SEO */}
+      <section className="bg-blue-50 py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+          
+          <div className="max-w-3xl mx-auto grid gap-6">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">How do you determine the condition of used products?</h3>
+              <p className="text-gray-600">
+                Each used product undergoes a thorough inspection and testing process by our technicians. 
+                We verify all core functionalities and rate products based on their condition, performance, 
+                and cosmetic appearance. Only products that meet our quality standards are listed for sale.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">Do used products come with a warranty?</h3>
+              <p className="text-gray-600">
+                Yes, all used products from RoboClub come with a 14-day warranty. If any product malfunctions 
+                or doesn't perform as described within this period, we'll replace it or provide a full refund.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">How much can I save by purchasing used products?</h3>
+              <p className="text-gray-600">
+                Our used products typically offer 30-70% savings compared to their brand new counterparts, 
+                depending on condition, age, and original retail price. Each listing clearly shows the 
+                original price and your savings.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">Can I sell my used electronics to RoboClub?</h3>
+              <p className="text-gray-600">
+                Yes! We have a buy-back program for quality used electronics and robotics components. 
+                Contact our team at info@roboclub.lk with details and photos of your items, and we'll 
+                provide an evaluation and quote for purchasing your used equipment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <Footer />
     </div>
   )

@@ -1,18 +1,14 @@
 import type React from "react"
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { CartDrawer } from "@/components/cart-drawer"
 import { Toaster } from "@/components/toaster"
 import { OrderProvider } from "@/context/OrderContext";
+import { metadata } from "./metadata"
+import { OrganizationJsonLd } from "@/components/organization-jsonld"
+import { GoogleServices } from "@/components/google-services"
 
 const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "RoboClub - Electronics & Robotics Store",
-  description: "Your trusted partner for electronics, robotics, and maker supplies",
-    generator: 'v0.dev'
-}
 
 export default function RootLayout({
   children,
@@ -21,7 +17,14 @@ export default function RootLayout({
 }) {
   return (
         <html lang="en">
+          <head>
+            <GoogleServices 
+              searchConsoleVerification="REPLACE_WITH_YOUR_VERIFICATION_CODE" 
+              analyticsId="G-REPLACE_WITH_YOUR_ANALYTICS_ID" 
+            />
+          </head>
           <body className={inter.className}>
+            <OrganizationJsonLd />
             <OrderProvider>
               {children}
               <CartDrawer />
