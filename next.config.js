@@ -30,14 +30,8 @@ const nextConfig = {
   // Mark API routes as dynamic to prevent static generation errors
   env: {
     BUILD_MODE: process.env.NEXT_PHASE === 'build' ? 'static' : 'dynamic',
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://roboclub.herokuapp.com',
+    NEXT_PUBLIC_API_URL: process.env.API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com',
   },
 }
-
-module.exports = nextConfig
-
-module.exports = nextConfig
-
-module.exports = nextConfig
 
 module.exports = nextConfig
