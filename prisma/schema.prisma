@@ -1,0 +1,13 @@
+// This is your Prisma schema file for the client side
+// It references the same schema as the server
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// The rest of the schema is in the server/prisma/schema.prisma file
+// This file is just used to generate the client
