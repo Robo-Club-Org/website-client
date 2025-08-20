@@ -54,7 +54,8 @@ export default function ProductsPage() {
       setLoading(true);
       setError(null);
       try {
-        const productsRes = await fetch('http://localhost:5000/products');
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com';
+        const productsRes = await fetch(`${apiBaseUrl}/products`);
         if (!productsRes.ok) throw new Error(`Products API error: ${productsRes.status}`);
         const rawProductsData = await productsRes.json();
         
@@ -82,7 +83,7 @@ export default function ProductsPage() {
         
         setAllProducts(productsData);
 
-        const categoriesRes = await fetch('http://localhost:5000/products/categories');
+        const categoriesRes = await fetch(`${apiBaseUrl}/products/categories`);
         if (categoriesRes.ok) {
           const rawCategoriesData = await categoriesRes.json();
           const categoriesData: Category[] = Array.isArray(rawCategoriesData)
