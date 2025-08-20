@@ -22,23 +22,6 @@ const nextConfig = {
   },
   // Use standalone output for Heroku deployments
   output: 'standalone',
-  // Skip dynamic routes during static export
-  exportPathMap: async function() {
-    return {
-      '/': { page: '/' },
-      '/products': { page: '/products' },
-      '/categories': { page: '/categories' },
-      '/brands': { page: '/brands' },
-      '/used-products': { page: '/used-products' },
-      '/contact-us': { page: '/contact-us' },
-      '/help-center': { page: '/help-center' },
-      '/shipping-info': { page: '/shipping-info' },
-      '/returns': { page: '/returns' },
-      '/login': { page: '/login' },
-      '/register': { page: '/register' },
-    };
-  },
-  // Set fallback for dynamic routes to true to generate on demand
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
