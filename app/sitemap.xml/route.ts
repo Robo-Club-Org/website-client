@@ -133,6 +133,7 @@ export async function GET() {
   return new Response(sitemap, {
     headers: {
       'Content-Type': 'text/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
     },
   })
 }

@@ -20,16 +20,31 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  // This helps with dynamic server components
-  output: process.env.NEXT_PHASE === 'build' ? 'standalone' : 'standalone',
+  // Use standalone output for Heroku deployments
+  output: 'standalone',
+  // Skip dynamic routes during static export
+  exportPathMap: async function() {
+    return {
+      '/': { page: '/' },
+      '/products': { page: '/products' },
+      '/categories': { page: '/categories' },
+      '/brands': { page: '/brands' },
+      '/used-products': { page: '/used-products' },
+      '/contact-us': { page: '/contact-us' },
+      '/help-center': { page: '/help-center' },
+      '/shipping-info': { page: '/shipping-info' },
+      '/returns': { page: '/returns' },
+      '/login': { page: '/login' },
+      '/register': { page: '/register' },
+    };
+  },
+  // Set fallback for dynamic routes to true to generate on demand
   experimental: {
-    // This allows dynamic usage in routes that would typically
-    // need to be statically generated at build time
     serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
-  // Mark API routes as dynamic to prevent static generation errors
+  // Environment variables
   env: {
-    BUILD_MODE: process.env.NEXT_PHASE === 'build' ? 'static' : 'dynamic',
+    BUILD_MODE: 'static',
     NEXT_PUBLIC_API_URL: process.env.API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com',
   },
 }

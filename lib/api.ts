@@ -221,6 +221,70 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+export async function getCategories(): Promise<Category[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/categories`, { cache: 'force-cache' });
+    
+    if (!response.ok) {
+      console.error('Failed to fetch categories:', response.statusText);
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    return Array.isArray(data) ? data.map((cat: any) => ({
+      id: cat.id?.toString() || '',
+      name: cat.name || '',
+      slug: cat.slug || cat.name?.toLowerCase().replace(/\s+/g, '-') || '',
+      description: cat.description || '',
+      imageUrl: cat.imageUrl || cat.image || undefined
+    })) : [];
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+    return [];
+  }
+}
+
+export interface Brand {
+  id: string;
+  name: string;
+  slug?: string;
+  description?: string;
+  logoUrl?: string;
+}
+
+export async function getBrands(): Promise<Brand[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/brands`, { cache: 'force-cache' });
+    
+    if (!response.ok) {
+      console.error('Failed to fetch brands:', response.statusText);
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    return Array.isArray(data) ? data.map((brand: any) => ({
+      id: brand.id?.toString() || '',
+      name: brand.name || '',
+      slug: brand.slug || brand.name?.toLowerCase().replace(/\s+/g, '-') || '',
+      description: brand.description || '',
+      logoUrl: brand.logoUrl || brand.logo || undefined
+    })) : [];
+  } catch (error) {
+    console.error('Failed to fetch brands:', error);
+    return [];
+  }
+}
+
 // Example of using authenticatedFetch for a protected route
 export async function getProtectedData() {
   try {
