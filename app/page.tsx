@@ -59,60 +59,68 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className="loading-container bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 opacity-90">
         <div className="loading-logo">
-          <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 706.45 853.84">
+            <svg
+            id="Layer_1"
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 706.45 853.84"
+            className="animate-spin-slow"
+            style={{ width: 120, height: 120 }}
+            >
             <defs>
               <style
-                dangerouslySetInnerHTML={{
-                  __html: `
-                    .cls-1 { fill: url(#linear-gradient); }
-                    .cls-2 { fill: url(#linear-gradient-2); }
-                    .cls-3 { fill: url(#linear-gradient-3); }
-                    .cls-4 { fill: url(#linear-gradient-4); }
-                    .cls-5 { fill: url(#linear-gradient-5); }
-                    .cls-6 { fill: url(#linear-gradient-6); }
-                    .cls-7 { fill: url(#linear-gradient-7); }
-                    .cls-8 { fill: url(#linear-gradient-8); }
-                    .cls-9 { fill: url(#linear-gradient-9); }
-                    .cls-10 { fill: url(#radial-gradient); }
-                    .cls-11 { opacity: 0.06; }
-                    .cls-12 { fill: url(#radial-gradient-2); }
-                    .cls-13 { fill: #54e0ef; }
-                    .cls-14 { fill: url(#radial-gradient-3); }
-                    .cls-15 { fill: #383838; opacity: 0.04; }
-                    .cls-16 { fill: #fff; opacity: 0.49; }
-                  `
-                }}
+              dangerouslySetInnerHTML={{
+                __html: `
+                .cls-1 { fill: url(#linear-gradient); }
+                .cls-2 { fill: url(#linear-gradient-2); }
+                .cls-3 { fill: url(#linear-gradient-3); }
+                .cls-4 { fill: url(#linear-gradient-4); }
+                .cls-5 { fill: url(#linear-gradient-5); }
+                .cls-6 { fill: url(#linear-gradient-6); }
+                .cls-7 { fill: url(#linear-gradient-7); }
+                .cls-8 { fill: url(#linear-gradient-8); }
+                .cls-9 { fill: url(#linear-gradient-9); }
+                .cls-10 { fill: url(#radial-gradient); }
+                .cls-11 { opacity: 0.06; }
+                .cls-12 { fill: url(#radial-gradient-2); }
+                .cls-13 { fill: #54e0ef; }
+                .cls-14 { fill: url(#radial-gradient-3); }
+                .cls-15 { fill: #383838; opacity: 0.04; }
+                .cls-16 { fill: #fff; opacity: 0.49; }
+                `
+              }}
               />
               <linearGradient id="linear-gradient" x1="222.81" y1="336.36" x2="279.75" y2="336.36" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#e4e8ef"/>
-                <stop offset="1" stop-color="#a0a5b0"/>
+              <stop offset="0" stopColor="#e4e8ef"/>
+              <stop offset="1" stopColor="#a0a5b0"/>
               </linearGradient>
               <linearGradient id="linear-gradient-2" x1="791.07" y1="336.36" x2="848.01" y2="336.36" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#a0a5b0"/>
-                <stop offset="1" stop-color="#e4e8ef"/>
+              <stop offset="0" stopColor="#a0a5b0"/>
+              <stop offset="1" stopColor="#e4e8ef"/>
               </linearGradient>
               <linearGradient id="linear-gradient-3" x1="163.98" y1="727.65" x2="362.3" y2="727.65" xlinkHref="#linear-gradient"/>
               <linearGradient id="linear-gradient-4" x1="682.03" y1="727.87" x2="880.35" y2="727.87" xlinkHref="#linear-gradient-2"/>
               <linearGradient id="linear-gradient-5" x1="540.45" y1="645.84" x2="540.45" y2="1042.61" xlinkHref="#linear-gradient"/>
               <linearGradient id="linear-gradient-6" x1="540.45" y1="781.73" x2="540.45" y2="844.84" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#a0a5b0"/>
-                <stop offset="1" stop-color="#b6babf"/>
+              <stop offset="0" stopColor="#a0a5b0"/>
+              <stop offset="1" stopColor="#b6babf"/>
               </linearGradient>
               <linearGradient id="linear-gradient-7" x1="540.45" y1="451.94" x2="540.45" y2="587" gradientUnits="userSpaceOnUse">
-                <stop offset="0.21" stop-color="#e4e8ef"/>
-                <stop offset="1" stop-color="#a0a5b0"/>
+              <stop offset="0.21" stopColor="#e4e8ef"/>
+              <stop offset="1" stopColor="#a0a5b0"/>
               </linearGradient>
               <linearGradient id="linear-gradient-8" x1="353.96" y1="48.7" x2="353.96" y2="2.64" xlinkHref="#linear-gradient-2"/>
               <linearGradient id="linear-gradient-9" x1="536.05" y1="189.33" x2="536.05" y2="516.9" xlinkHref="#linear-gradient"/>
               <radialGradient id="radial-gradient" cx="540.45" cy="352.97" r="248.79" gradientTransform="translate(0 150.93) scale(1 0.57)" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#1f4760"/>
-                <stop offset="1" stop-color="#0e202b"/>
+              <stop offset="0" stopColor="#1f4760"/>
+              <stop offset="1" stopColor="#0e202b"/>
               </radialGradient>
               <radialGradient id="radial-gradient-2" cx="428.99" cy="343.51" r="30.38" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#96f5ff"/>
-                <stop offset="1" stop-color="#54e0ef"/>
+              <stop offset="0" stopColor="#96f5ff"/>
+              <stop offset="1" stopColor="#54e0ef"/>
               </radialGradient>
               <radialGradient id="radial-gradient-3" cx="651.51" cy="343.51" r="30.38" xlinkHref="#radial-gradient-2"/>
             </defs>
@@ -132,11 +140,22 @@ export default function HomePage() {
             <path className="cls-15" d="M762.14,653c0,38.24-3.55,73.25-10.14,104.88q-1,4.85-2.11,9.57C719.75,896.9,637.36,967,540.45,967c-45.34,0-87.5-15.35-122.62-44.93,33.61,7.84,69.29,4.86,102.42-5C599.94,893.33,666.06,828.23,691,748.92,713.69,677,701.92,595.28,661,532.12,724.23,555,762.14,597.46,762.14,653Z" transform="translate(-186.49 -113.16)"/>
             <path className="cls-16" d="M438,598.73c-4.28,9.33-13.12,15.54-21,22.18A145.94,145.94,0,0,0,369,702.7c-1.28,6.44-4.83,14.95-11.23,13.45-3.85-.91-5.72-5.21-6.83-9a124.37,124.37,0,0,1,57.62-142.93,20,20,0,0,1,24.81,3.73l.12.13A29,29,0,0,1,438,598.73Z" transform="translate(-186.49 -113.16)"/>
             <path className="cls-16" d="M394.68,205.16c-53.19,12.41-80.9,35.67-94.45,52a5,5,0,0,1-8.72-4.41c7-27.4,25.61-44.65,44.39-55.23,16.31-9.18,34.26-14.65,52.56-18.92a13.5,13.5,0,0,1,15.81,8.66l.09.26A13.52,13.52,0,0,1,394.68,205.16Z" transform="translate(-186.49 -113.16)"/>
-          </svg>
+            </svg>
+            <style jsx>{`
+            @keyframes spin-slow {
+              0% { transform: rotate(0deg);}
+              100% { transform: rotate(360deg);}
+            }
+            .animate-spin-slow {
+              animation: spin-slow 2s linear infinite;
+              display: block;
+              margin: 0 auto;
+            }
+            `}</style>
         </div>
         <div className="loading-text" aria-label="Robo Club">
-          <span>robo</span>
-          <span>club</span>
+          <span>Robo</span>
+          <span>Club</span>
         </div>
       </div>
     )
