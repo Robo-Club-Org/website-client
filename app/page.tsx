@@ -9,7 +9,7 @@ import { Footer } from "@/components/home/Footer"
 import { brands ,  mockProducts } from "@/lib/constants" 
 import Image from "next/image"
 import gif from "../public/Spinner.gif"
-import LoadingEffect from "@/components/ui/loading-effect"
+
 
 import type { Product as FeaturedCardProduct } from "@/lib/constants"
 
