@@ -59,7 +59,7 @@ export default function HomePage() {
   }, [])
 
   if (loading) {
-    return <LoadingEffect duration={3000} />
+    return <> </>
   }
 
   if (error) {
