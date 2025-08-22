@@ -9,6 +9,7 @@ import { Footer } from "@/components/home/Footer"
 import { brands ,  mockProducts } from "@/lib/constants" 
 import Image from "next/image"
 import gif from "../public/Spinner.gif"
+import LoadingEffect from "@/components/ui/loading-effect"
 
 import type { Product as FeaturedCardProduct } from "@/lib/constants"
 
@@ -58,11 +59,7 @@ export default function HomePage() {
   }, [])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Image src={gif} alt="Loading..." width={256} height={256} />
-      </div>
-    )
+    return <LoadingEffect duration={3000} />
   }
 
   if (error) {

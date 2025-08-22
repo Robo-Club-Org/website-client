@@ -24,12 +24,6 @@ function generateSiteMap(
        <priority>0.9</priority>
      </url>
      <url>
-       <loc>${baseUrl}/used-products</loc>
-       <lastmod>${new Date().toISOString()}</lastmod>
-       <changefreq>daily</changefreq>
-       <priority>0.9</priority>
-     </url>
-     <url>
        <loc>${baseUrl}/categories</loc>
        <lastmod>${new Date().toISOString()}</lastmod>
        <changefreq>weekly</changefreq>
@@ -115,7 +109,7 @@ function generateSiteMap(
 
 export async function GET() {
   // Fetch all products, categories, and brands
-  const products = await getProducts() || []
+  const products = await getProducts({}) || []
   const categories = await getCategories() || []
   const brands = await getBrands() || []
   
@@ -133,7 +127,6 @@ export async function GET() {
   return new Response(sitemap, {
     headers: {
       'Content-Type': 'text/xml',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
     },
   })
 }
