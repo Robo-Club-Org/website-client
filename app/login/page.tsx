@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,19 +16,22 @@ export default function LoginPage() {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setIsLoading(true);
 
     if (!loginForm.email || !loginForm.password) {
       setError("Please fill in all fields");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${apiBaseUrl}/auth/login`, {
         method: "POST",
         headers: {
@@ -61,6 +64,8 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Login error:", err);
       setError("Network error or server is unreachable.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +78,7 @@ export default function LoginPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={40} height={40} className="object-contain" />
+              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={32} height={32} className="object-contain w-8 h-8" />
               <span className="text-xl font-bold text-black">
                 RoboClub
               </span>
@@ -102,6 +107,7 @@ export default function LoginPage() {
                       value={loginForm.email}
                       onChange={(e) => setLoginForm((prev) => ({ ...prev, email: e.target.value }))}
                       required
+                      disabled={isLoading}
                     />
                   </div>
                   <div>
@@ -113,6 +119,7 @@ export default function LoginPage() {
                         value={loginForm.password}
                         onChange={(e) => setLoginForm((prev) => ({ ...prev, password: e.target.value }))}
                         required
+                        disabled={isLoading}
                       />
                       <Button
                         type="button"
@@ -120,6 +127,7 @@ export default function LoginPage() {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
@@ -133,7 +141,20 @@ export default function LoginPage() {
                     {error && <p className="text-[11px] text-red-600">{error}</p>}
                     {success && <p className="text-[11px] text-green-600">{success}</p>}
                   </div>
-                  <Button type="submit" className="w-full !mt-1">Login</Button>
+                  <Button 
+                    type="submit" 
+                    className="w-full !mt-1" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                        Logging in...
+                      </>
+                    ) : (
+                      'Login'
+                    )}
+                  </Button>
                   <p className="text-xs text-center text-slate-600">Don't have an account? <Link href="/register" className="text-blue-600 font-semibold hover:underline">Register</Link></p>
                 </form>
             </div>

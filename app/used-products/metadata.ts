@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Used Electronics & Robotics Products | RoboClub Sri Lanka",
     description: "Browse pre-owned robotics components, development boards, and electronic equipment at discounted prices.",
-    url: 'https://roboclub-client-938d32cbf571.herokuapp.com/used-products',
+  url: 'https://roboclub.lk/used-products',
     siteName: 'RoboClub',
     locale: 'en_US',
     type: 'website',

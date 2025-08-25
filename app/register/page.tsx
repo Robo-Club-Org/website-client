@@ -51,7 +51,7 @@ export default function RegisterPage() {
 
     try {
       setLoading(true)
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://roboclub-server-70e29f041ab3.herokuapp.com'
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
   const response = await fetch(`${apiBaseUrl}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,7 +82,7 @@ export default function RegisterPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={40} height={40} className="object-contain" />
+              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={32} height={32} className="object-contain w-8 h-8" />
               <span className="text-xl font-bold text-black">RoboClub</span>
             </div>
     <div className="flex items-center gap-6 text-sm font-medium">

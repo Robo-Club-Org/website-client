@@ -6,11 +6,15 @@ export function OrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'RoboClub',
-    url: 'https://roboclub-client-938d32cbf571.herokuapp.com',
-    logo: 'https://roboclub-client-938d32cbf571.herokuapp.com/roboclub-logo.png',
+  url: 'https://roboclub.lk',
+  logo: 'https://roboclub.lk/roboclub-logo.png',
     description: "Sri Lanka's trusted online store for electronics, robotics components, development boards, sensors, and maker supplies.",
     address: {
       '@type': 'PostalAddress',
+      streetAddress: 'Katubadda',
+      addressLocality: 'Moratuwa',
+      addressRegion: 'Western Province',
+      postalCode: '10400',
       addressCountry: 'Sri Lanka'
     },
     contactPoint: {

@@ -25,7 +25,7 @@ export function ProductJsonLd({ product, url }: ProductJsonLdProps) {
   
   // Process image URLs to ensure they're absolute
   const processedImages = images.map(img => 
-    img.startsWith('http') ? img : `https://roboclub-client-938d32cbf571.herokuapp.com${img}`
+    img.startsWith('http') ? img : `https://roboclub.lk${img}`
   )
 
   // Handle brand which could be a string or object
@@ -46,6 +46,9 @@ export function ProductJsonLd({ product, url }: ProductJsonLdProps) {
     image: processedImages.length > 0 ? processedImages : undefined,
     sku: product.sku,
     mpn: product.id,
+    identifier_exists: "yes",
+    gtin: product.sku || product.id,
+    productID: `roboclub:${product.id}`,
     brand: brandName
       ? {
           '@type': 'Brand',
@@ -53,6 +56,7 @@ export function ProductJsonLd({ product, url }: ProductJsonLdProps) {
         } 
       : undefined,
     category: categoryName,
+    itemCondition: "https://schema.org/NewCondition",
     offers: {
       '@type': 'Offer',
       url: url,
@@ -64,14 +68,39 @@ export function ProductJsonLd({ product, url }: ProductJsonLdProps) {
         : 'https://schema.org/OutOfStock',
       seller: {
         '@type': 'Organization',
-        name: 'RoboClub'
+        name: 'RoboClub',
+        logo: 'https://roboclub.lk/roboclub-logo.png'
+      },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: product.price >= 10000 ? 0 : 400,
+          currency: 'LKR'
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 0,
+            maxValue: 1,
+            unitCode: 'DAY'
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 1,
+            maxValue: 5,
+            unitCode: 'DAY'
+          }
+        }
       }
     },
     ...(product.rating && {
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: product.rating,
-        reviewCount: product.reviews || 1
+        reviewCount: product.reviews || 1,
+        bestRating: 5
       }
     })
   }

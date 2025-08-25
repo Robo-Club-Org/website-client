@@ -116,11 +116,18 @@ export function useProductSearch(products: Product[], itemsPerPage = 30) {
         return false;
       }
       
-      // Category filter
+      // Category filter (supports name or slug; case-insensitive)
       if (filters.category !== 'all') {
+        const wanted = String(filters.category).trim().toLowerCase();
+        const matchBy = (name?: string, slug?: string) => {
+          const n = name?.trim().toLowerCase();
+          const s = slug?.trim().toLowerCase() || n?.replace(/\s+/g, '-');
+          return n === wanted || s === wanted;
+        };
+
         const hasCategory = (
-          product.category?.name === filters.category ||
-          product.categories?.some(cat => cat.category.name === filters.category)
+          matchBy(product.category?.name, product.category?.slug) ||
+          product.categories?.some(cat => matchBy(cat.category.name, cat.category.slug))
         );
         if (!hasCategory) return false;
       }

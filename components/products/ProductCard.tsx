@@ -55,17 +55,16 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const [qty, setQty] = useState(1)
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm h-full flex flex-col">
+    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm flex flex-col" style={{ maxHeight: '400px' }}>
       <CardContent className="p-2 flex flex-col h-full">
         <Link href={`/products/product/${product.slug || slugify(product.name)}`}>
           <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-2 flex items-center justify-center overflow-hidden relative cursor-pointer">
                 <Image
                   src={product.imageUrls?.[0] || product.imageUrl || "/placeholder.svg"} // Handle both imageUrls and imageUrl
-              alt={product.name}
-              width={200}
-              height={200}
-                  unoptimized
-              className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  alt={product.name}
+                  width={200}
+                  height={200}
+                  className="object-contain group-hover:scale-105 transition-transform duration-300"
             />
             {product.stockQuantity <= 0 && ( // Use stockQuantity
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -77,9 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
 
-  {/* Categories/brand badges removed as requested */}
-
-  <Link href={`/products/product/${product.slug || slugify(product.name)}`}>
+        <Link href={`/products/product/${product.slug || slugify(product.name)}`}>
           <h3 className="text-sm font-semibold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors line-clamp-2 cursor-pointer leading-tight">
             {product.name}
           </h3>

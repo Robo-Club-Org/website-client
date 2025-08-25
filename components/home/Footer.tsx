@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={40} height={40} className="object-contain" />
+              <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={32} height={32} className="object-contain w-8 h-8" />
               <span className="text-xl font-bold">RoboClub</span>
             </div>
             <p className="text-slate-400">Your trusted partner for electronics, robotics, and maker supplies.</p>
@@ -25,16 +25,6 @@ export function Footer() {
               <li>
                 <Link href="/categories" className="hover:text-white transition-colors">
                   Categories
-                </Link>
-              </li>
-              <li>
-                <Link href="/brands" className="hover:text-white transition-colors">
-                  Brands
-                </Link>
-              </li>
-              <li>
-                <Link href="/deals" className="hover:text-white transition-colors">
-                  Deals
                 </Link>
               </li>
             </ul>
@@ -59,6 +49,11 @@ export function Footer() {
             </Link>
               </li>
               <li>
+            <Link href="/warranty-policy" className="hover:text-white transition-colors">
+              Warranty Policy
+            </Link>
+              </li>
+              <li>
             <Link href="/contact-us" className="hover:text-white transition-colors">
               Contact Us
             </Link>
@@ -72,6 +67,8 @@ export function Footer() {
               <p>roboclub.main@gmail.com</p>
               <p>+94729557537</p>
               <p>Mon-Fri 9AM-6PM EST</p>
+              <p>Katubadda, Moratuwa, 10400</p>
+              <p>Sri Lanka</p>
             </div>
           </div>
         </div>

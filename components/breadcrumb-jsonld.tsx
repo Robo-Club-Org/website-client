@@ -20,7 +20,7 @@ export function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
       name: item.name,
       item: item.url.startsWith('http') 
         ? item.url 
-        : `https://roboclub-client-938d32cbf571.herokuapp.com${item.url}`
+        : `https://roboclub.lk${item.url}`
     }))
   }
 

@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useState } from "react"
 
+
 export function HeroSection() {
   const [searchQuery, setSearchQuery] = useState("")
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`
+      // Navigate to products page with search query
+      window.location.href = `/products?query=${encodeURIComponent(searchQuery)}`
     }
   }
 
@@ -68,22 +70,22 @@ export function HeroSection() {
         </div>
       </section>
 
-      {/* Electronics Projects & PCB Design Section */}
+      {/* Premium Electronics Products Section */}
       <section className="bg-white py-16 px-4 sm:px-6 lg:px-12">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            We Build Custom Electronics Projects & PCB Designs
+            Premium Electronics & Robotics Components
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-            From concept to prototype, we help you bring your ideas to life. Our team specializes in embedded systems, IoT, robotics, and high-quality custom PCB design and manufacturing.
+            Shop our extensive collection of Arduino, Espressif, sensors, development boards, and maker supplies. We offer high-quality components for hobbyists, professionals, and educational institutions.
           </p>
-          <Link href="/projects">
+          <Link href="/products">
             <Button
               size="lg"
               className="bg-blue-600 text-white hover:bg-blue-700 px-6 py-3 text-base rounded-full font-semibold"
             >
               <LayoutDashboard className="w-5 h-5 mr-2" />
-              View Our Projects
+              Browse Our Products
             </Button>
           </Link>
         </div>

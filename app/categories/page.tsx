@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import Breadcrumb from "@/components/breadcrumb";
+import { getHomeBreadcrumb, getBreadcrumbJsonLdItems } from "@/lib/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Product Categories | RoboClub",
@@ -12,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Product Categories | RoboClub",
     description: "Explore our wide range of product categories including microcontrollers, sensors, robotics kits, and more.",
-    url: 'https://roboclub-client-938d32cbf571.herokuapp.com/categories',
+  url: 'https://roboclub.lk/categories',
     siteName: 'RoboClub',
     locale: 'en_US',
     type: 'website',
@@ -33,7 +35,7 @@ type Category = {
 async function getCategories(): Promise<Category[]> {
   try {
     const base = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${base}/products/categories`, { cache: "no-store" });
+    const res = await fetch(`${base}/products/categories`, { cache: "force-cache" });
     if (!res.ok) throw new Error("Failed to fetch categories");
     return await res.json();
   } catch (e) {
@@ -48,11 +50,21 @@ export default async function Categories() {
   return (
     <>
       <BreadcrumbJsonLd 
-        items={[
-          { name: 'Home', url: '/' },
-          { name: 'Categories', url: '/categories' }
-        ]}
+        items={getBreadcrumbJsonLdItems([
+          getHomeBreadcrumb(),
+          { name: 'Categories', href: '/categories' }
+        ])}
       />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="my-4 md:my-4 bg-white/70 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm mb-6">
+          <Breadcrumb 
+            items={[
+              getHomeBreadcrumb(),
+              { name: 'Categories', href: '/categories' }
+            ]}
+          />
+        </div>
+      </div>
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 opacity-90" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
@@ -73,7 +85,7 @@ export default async function Categories() {
                   {categories.map((cat) => (
                     <Link
                       key={cat.id}
-                      href={`/products?category=${encodeURIComponent(cat.slug)}`}
+                      href={`/products?category=${encodeURIComponent(cat.name)}`}
                       className="group block rounded-xl border border-blue-100 bg-white/80 hover:bg-white hover:shadow-lg transition overflow-hidden"
                     >
                       <div className="p-5">

@@ -49,8 +49,51 @@ export default function UsedProductsPage() {
     pagination,
     updateFilter,
     goToPage,
-    resetFilters
+    resetFilters,
+    setFilters
   } = useProductSearch(usedProducts, 30)
+  
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlFilters: Record<string, any> = {};
+      
+      // Get query parameter (could be 'query' or 'search')
+      const searchQuery = params.get('query') || params.get('search');
+      if (searchQuery) {
+        urlFilters.query = searchQuery;
+      }
+      
+      // Get category parameter
+      const category = params.get('category');
+      if (category) {
+        urlFilters.category = category;
+      }
+      
+      // Get price range parameters
+      const minPrice = params.get('minPrice');
+      if (minPrice) {
+        urlFilters.minPrice = Number(minPrice);
+      }
+      
+      const maxPrice = params.get('maxPrice');
+      if (maxPrice) {
+        urlFilters.maxPrice = Number(maxPrice);
+      }
+      
+      // Get sort parameter
+      const sortBy = params.get('sortBy');
+      if (sortBy) {
+        urlFilters.sortBy = sortBy;
+      }
+      
+      // Update filters if any URL parameters were found
+      if (Object.keys(urlFilters).length > 0) {
+        setFilters(prev => ({ ...prev, ...urlFilters }));
+      }
+    }
+  }, [setFilters]);
 
   // Fetch only used products
   useEffect(() => {
@@ -74,6 +117,7 @@ export default function UsedProductsPage() {
                 price: typeof p.price === 'number' ? p.price : parseFloat(p.price) || 0,
                 stockQuantity: p.stockQuantity || p.stock || 0,
                 imageUrl: p.imageUrl || p.image || '/placeholder.svg',
+                imageUrls: p.imageUrls || [p.imageUrl || p.image || '/placeholder.svg'],
                 isFeatured: Boolean(p.isFeatured),
                 isUsed: Boolean(p.isUsed), // ✅ map isUsed
                 createdAt: p.createdAt || new Date().toISOString(),
@@ -91,7 +135,7 @@ export default function UsedProductsPage() {
         setUsedProducts(productsData);
 
         // Fetch categories
-        const categoriesRes = await fetch(`${apiBaseUrl}/categories`);
+        const categoriesRes = await fetch(`${apiBaseUrl}/products/categories`);
         if (categoriesRes.ok) {
           const rawCategoriesData = await categoriesRes.json();
           const categoriesData: Category[] = Array.isArray(rawCategoriesData)
@@ -117,6 +161,33 @@ export default function UsedProductsPage() {
 
   const handleFilterChange = (key: string, value: any) => {
     updateFilter(key as keyof typeof filters, value);
+    
+    // Update URL parameters when filters change
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      
+      if (value === 'all' || value === '' || 
+         (key === 'minPrice' && value === 0) || 
+         (key === 'maxPrice' && value === Infinity)) {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, value.toString());
+      }
+      
+      // Update URL without reloading the page
+      window.history.pushState({}, '', url.toString());
+    }
+  };
+
+  const handleResetFilters = () => {
+    resetFilters();
+    
+    // Clear URL parameters when filters are reset
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.search = '';
+      window.history.pushState({}, '', url.toString());
+    }
   };
 
   if (error) {
@@ -164,7 +235,7 @@ export default function UsedProductsPage() {
           }}
           suggestions={suggestions.map(s => ({ type: s.type, text: s.text }))}
           onFilterChange={handleFilterChange}
-          onResetFilters={resetFilters}
+          onResetFilters={handleResetFilters}
           totalResults={pagination.totalItems}
         />
 
@@ -182,7 +253,9 @@ export default function UsedProductsPage() {
               products={paginatedResults.map(product => ({
                 ...product,
                 description: product.description || "",
-                imageUrls: [product.imageUrl || '/placeholder.svg']
+                imageUrls: Array.isArray((product as any).imageUrls) && (product as any).imageUrls.length > 0 
+                  ? (product as any).imageUrls 
+                  : [product.imageUrl || '/placeholder.svg']
               }))} 
               viewMode="grid" 
             />
@@ -230,50 +303,6 @@ export default function UsedProductsPage() {
           />
         )}
       </main>
-      
-      {/* FAQ Section for SEO */}
-      <section className="bg-blue-50 py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-          
-          <div className="max-w-3xl mx-auto grid gap-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">How do you determine the condition of used products?</h3>
-              <p className="text-gray-600">
-                Each used product undergoes a thorough inspection and testing process by our technicians. 
-                We verify all core functionalities and rate products based on their condition, performance, 
-                and cosmetic appearance. Only products that meet our quality standards are listed for sale.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">Do used products come with a warranty?</h3>
-              <p className="text-gray-600">
-                Yes, all used products from RoboClub come with a 14-day warranty. If any product malfunctions 
-                or doesn't perform as described within this period, we'll replace it or provide a full refund.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">How much can I save by purchasing used products?</h3>
-              <p className="text-gray-600">
-                Our used products typically offer 30-70% savings compared to their brand new counterparts, 
-                depending on condition, age, and original retail price. Each listing clearly shows the 
-                original price and your savings.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">Can I sell my used electronics to RoboClub?</h3>
-              <p className="text-gray-600">
-                Yes! We have a buy-back program for quality used electronics and robotics components. 
-                Contact our team at info@roboclub.lk with details and photos of your items, and we'll 
-                provide an evaluation and quote for purchasing your used equipment.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
       
       <Footer />
     </div>

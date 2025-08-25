@@ -19,6 +19,8 @@ export default function CartPage() {
     removeItem,
     getTotalPrice,
     syncWithServer,
+    shippingMethod,
+    setShippingMethod
   } = useCartStore()
 
   // Local editable quantities to avoid server race conditions while typing
@@ -58,8 +60,17 @@ export default function CartPage() {
     syncWithServer()
   }, [syncWithServer])
 
-  const subtotal = getTotalPrice()
-  const shipping = subtotal >= 10000 ? 0 : 500 // Free shipping over 10000 LKR
+  const subtotal = getTotalPrice();
+  
+  // Calculate shipping cost based on method
+  const getShippingCost = () => {
+    if (shippingMethod === "pickup") return 0 // Free for pickup
+    if (shippingMethod === "pickmeflash") return 0 // Customer pays directly to Pick Me Flash
+    // Standard delivery
+    return subtotal >= 10000 ? 0 : 500 // Free standard shipping over 10000 LKR
+  }
+  
+  const shipping = getShippingCost()
   const tax = subtotal * 0.00 // 0% tax
   const total = subtotal + shipping + tax
 
@@ -198,9 +209,53 @@ export default function CartPage() {
                       <span className="text-slate-600">Subtotal</span>
                       <span className="font-medium">LKR {subtotal.toFixed(2)}</span>
                     </div>
+                    
+                    {/* Shipping method selection */}
+                    <div className="mt-4 mb-2">
+                      <p className="text-slate-700 font-medium mb-2">Shipping Method:</p>
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input 
+                            type="radio" 
+                            name="shipping" 
+                            value="standard" 
+                            checked={shippingMethod === "standard"}
+                            onChange={() => setShippingMethod("standard")}
+                            className="text-blue-600" 
+                          />
+                          <span>Standard Delivery {subtotal >= 10000 ? "(Free)" : "(LKR 500)"}</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input 
+                            type="radio" 
+                            name="shipping" 
+                            value="pickup" 
+                            checked={shippingMethod === "pickup"}
+                            onChange={() => setShippingMethod("pickup")}
+                            className="text-blue-600" 
+                          />
+                          <span>Store Pickup (Free)</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input 
+                            type="radio" 
+                            name="shipping" 
+                            value="pickmeflash" 
+                            checked={shippingMethod === "pickmeflash"}
+                            onChange={() => setShippingMethod("pickmeflash")}
+                            className="text-blue-600" 
+                          />
+                          <span>Pick Me Flash (Paid by customer)</span>
+                        </label>
+                      </div>
+                    </div>
+                    
                     <div className="flex justify-between">
                       <span className="text-slate-600">Shipping</span>
-                      <span className="font-medium">{shipping === 0 ? "Free" : `LKR ${shipping.toFixed(2)}`}</span>
+                      <span className="font-medium">
+                        {shippingMethod === "pickmeflash" ? "Paid by customer" : 
+                         shipping === 0 ? "Free" : `LKR ${shipping.toFixed(2)}`}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Tax</span>
@@ -214,9 +269,15 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {subtotal < 10000 && (
+                  {subtotal < 10000 && shippingMethod === "standard" && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
                       <p className="text-sm text-blue-700">Add LKR {(10000 - subtotal).toFixed(2)} more for free shipping!</p>
+                    </div>
+                  )}
+                  
+                  {shippingMethod === "pickmeflash" && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
+                      <p className="text-sm text-amber-700">Pick Me Flash delivery fee will be charged directly by the courier service upon delivery.</p>
                     </div>
                   )}
 

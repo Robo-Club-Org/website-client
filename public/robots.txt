@@ -5,5 +5,9 @@ Allow: /
 Disallow: /admin/
 Disallow: /admin/*
 
-# Sitemap location
-Sitemap: https://roboclub-client-938d32cbf571.herokuapp.com/sitemap.xml
+# Sitemap locations
+Sitemap: https://roboclub.lk/sitemap.xml
+Sitemap: https://roboclub.lk/products-sitemap.xml
+
+# Encourage Google to crawl product pages more frequently
+Crawl-delay: 1

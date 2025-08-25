@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "RoboClub - Premium Electronics & Robotics Store in Sri Lanka",
-  description: "Sri Lanka's trusted online store for electronics, robotics components, development boards, sensors, and maker supplies. Free shipping on orders over LKR 10,000.",
-  keywords: "robotics, electronics, Arduino, Raspberry Pi, sensors, Sri Lanka, online store, development boards, maker supplies, electronic components",
+  description: "Sri Lanka's trusted online store for premium electronics and robotics components. Shop Arduino, Raspberry Pi, sensors, development boards, and maker supplies. Free shipping over LKR 10,000.",
+  keywords: "robotics, electronics, Arduino, Raspberry Pi, sensors, Sri Lanka, online store, development boards, maker supplies, electronic components, modules, DIY , passive electronics,ICs , connectors, capacitors,resistors,transistors,inductors,mosfet,bjt,Lanka",
   authors: [{ name: "RoboClub" }],
   creator: "RoboClub",
   publisher: "RoboClub",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     email: false,
     telephone: false,
   },
-  metadataBase: new URL('https://roboclub-client-938d32cbf571.herokuapp.com'),
+  metadataBase: new URL('https://roboclub.lk'),
   alternates: {
     canonical: '/',
   },
@@ -28,24 +28,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "RoboClub - Premium Electronics & Robotics Store in Sri Lanka",
-    description: "Sri Lanka's trusted online store for electronics, robotics components, development boards, sensors, and maker supplies.",
-    url: 'https://roboclub-client-938d32cbf571.herokuapp.com',
+    description: "Sri Lanka's trusted online store for premium electronics and robotics components. Shop Arduino, Raspberry Pi, sensors, development boards, and maker supplies.",
+    url: 'https://roboclub.lk',
     siteName: 'RoboClub',
     locale: 'en_US',
     type: 'website',
     images: [
       {
-        url: '/roboclub-logo.png',
+        url: 'https://roboclub.lk/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'RoboClub Logo',
+        alt: 'RoboClub - Premium Electronics & Robotics Store in Sri Lanka',
       }
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: "RoboClub - Premium Electronics & Robotics Store in Sri Lanka",
-    description: "Sri Lanka's trusted online store for electronics, robotics components, and maker supplies.",
-    images: ['/roboclub-logo.png'],
+    description: "Sri Lanka's trusted online store for premium electronics and robotics components. Shop Arduino, Raspberry Pi, sensors, and maker supplies.",
+    images: ['https://roboclub.lk/og-image.jpg'],
   }
 }

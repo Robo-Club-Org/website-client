@@ -44,7 +44,7 @@ export function ProductsGrid({ products, viewMode }: ProductsGridProps) {
   }
 
   return (
-    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 min-h-[500px]">
+    <div className={`grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 ${products.length < 7 ? '' : 'min-h-[500px]'}`}>
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

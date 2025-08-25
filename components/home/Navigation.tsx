@@ -22,7 +22,7 @@ export function Navigation() {
           
             <Link href="/">
               <div className="flex items-center space-x-3">
-                <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={40} height={40} className="object-contain" />
+                <Image src="/roboclub-logo.png" alt="RoboClub Logo" width={32} height={32} className="object-contain w-8 h-8" />
                 <span className="text-xl font-bold text-gray-900">
                   RoboClub
                 </span>
@@ -95,10 +95,12 @@ export function Navigation() {
               <Link href="/products" className={`font-medium transition-colors ${isActive('/products') ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900'}`}>
                 Products
               </Link>
+              <Link href="/used-products" className={`font-medium transition-colors ${isActive('/used-products') ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900'}`}>
+                Used Products
+              </Link>
               <Link href="/projects" className={`font-medium transition-colors ${isActive('/projects') ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900'}`}>
                 Projects
               </Link>
-              <CartIcon className={`font-medium transition-colors ${isActive('/cart') ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900'}`} showText={false} />
               {isLoggedIn ? (
                 <>
                   <Link href="/my-account" className={`font-medium transition-colors ${isActive('/my-account') ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900'}`}>

@@ -37,11 +37,20 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>("")
   // No card payment; we display bank transfer instructions instead
 
-  const { items: cartItems, getTotalPrice, clearCart } = useCartStore()
+  const { items: cartItems, getTotalPrice, clearCart, shippingMethod, setShippingMethod } = useCartStore()
   const { isLoggedIn } = useAuth()
 
   const subtotal = getTotalPrice()
-  const shipping = subtotal > 10000 ? 0 : 500 // Free shipping over LKR 10000
+  
+  // Calculate shipping cost based on method
+  const getShippingCost = () => {
+    if (shippingMethod === "pickup") return 0 // Free for pickup
+    if (shippingMethod === "pickmeflash") return 0 // Customer pays directly to Pick Me Flash
+    // Standard delivery
+    return subtotal >= 10000 ? 0 : 500 // Free standard shipping over 10000 LKR
+  }
+  
+  const shipping = getShippingCost()
   const tax = subtotal * 0.0// 0% tax
   const total = subtotal + shipping + tax
 
@@ -84,7 +93,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!selectedAddressId) {
+    if (shippingMethod !== "pickup" && !selectedAddressId) {
       alert('Please select a shipping address');
       return;
     }
@@ -108,6 +117,7 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           shippingAddressId: selectedAddressId,
+          shippingMethod: shippingMethod
         }),
       });
 
@@ -216,41 +226,111 @@ export default function CheckoutPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Truck className="h-5 w-5 mr-2" />
-                    Shipping Address
+                    Shipping Method & Address
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {addresses.length === 0 ? (
-                    <div className="text-center py-4">
-                      <p className="text-slate-600 mb-4">No saved addresses found.</p>
-                      <Link href="/my-account?tab=addresses">
-                        <Button variant="outline">Add Address</Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId}>
-                      {addresses.map((address) => (
-                        <div key={address.id} className="flex items-start space-x-3">
-                          <RadioGroupItem value={address.id} id={address.id} className="mt-1" />
-                          <Label htmlFor={address.id} className="flex-1 cursor-pointer">
-                            <div className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                              <div className="font-semibold text-slate-900">{address.fullName}</div>
-                              <div className="text-sm text-slate-600 mt-1">
-                                <div>{address.addressLine1}</div>
-                                {address.addressLine2 && <div>{address.addressLine2}</div>}
-                                <div>{address.city}, {address.district} {address.zipCode}</div>
-                                {address.phoneNumber && <div>Phone: {address.phoneNumber}</div>}
-                              </div>
-                              {address.isDefault && (
-                                <div className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-2">
-                                  Default
-                                </div>
-                              )}
+                  {/* Shipping Method Selection */}
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium mb-3">Select Shipping Method:</h3>
+                    <RadioGroup value={shippingMethod} onValueChange={setShippingMethod} className="space-y-2 mb-4">
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="standard" id="standard" />
+                        <Label htmlFor="standard" className="flex-1 cursor-pointer">
+                          <div className="border border-slate-200 rounded-lg p-3 hover:border-blue-300 transition-colors">
+                            <div className="font-semibold text-slate-900">Standard Delivery</div>
+                            <div className="text-sm text-slate-600 mt-1">
+                              {subtotal >= 10000 ? "Free" : `LKR 500.00`}
                             </div>
-                          </Label>
-                        </div>
-                      ))}
+                            {subtotal < 10000 && (
+                              <div className="text-xs text-blue-600 mt-1">
+                                Add LKR {(10000 - subtotal).toFixed(2)} more for free shipping!
+                              </div>
+                            )}
+                          </div>
+                        </Label>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="pickup" id="pickup" />
+                        <Label htmlFor="pickup" className="flex-1 cursor-pointer">
+                          <div className="border border-slate-200 rounded-lg p-3 hover:border-blue-300 transition-colors">
+                            <div className="font-semibold text-slate-900">Store Pickup</div>
+                            <div className="text-sm text-slate-600 mt-1">
+                              Free
+                            </div>
+                          </div>
+                        </Label>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="pickmeflash" id="pickmeflash" />
+                        <Label htmlFor="pickmeflash" className="flex-1 cursor-pointer">
+                          <div className="border border-slate-200 rounded-lg p-3 hover:border-blue-300 transition-colors">
+                            <div className="font-semibold text-slate-900">Pick Me Flash</div>
+                            <div className="text-sm text-slate-600 mt-1">
+                              Paid by customer on delivery
+                            </div>
+                          </div>
+                        </Label>
+                      </div>
                     </RadioGroup>
+                    
+                    {shippingMethod === "pickmeflash" && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-4 text-xs text-amber-800">
+                        Pick Me Flash delivery fee will be charged directly by the courier service upon delivery.
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Shipping Address - Only show if not pickup */}
+                  {shippingMethod !== "pickup" && (
+                    <>
+                      <div className="border-t pt-4 mb-2">
+                        <h3 className="text-sm font-medium mb-3">Shipping Address:</h3>
+                      </div>
+                      {addresses.length === 0 ? (
+                        <div className="text-center py-4">
+                          <p className="text-slate-600 mb-4">No saved addresses found.</p>
+                          <Link href="/my-account?tab=addresses">
+                            <Button variant="outline">Add Address</Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId}>
+                          {addresses.map((address) => (
+                            <div key={address.id} className="flex items-start space-x-3">
+                              <RadioGroupItem value={address.id} id={address.id} className="mt-1" />
+                              <Label htmlFor={address.id} className="flex-1 cursor-pointer">
+                                <div className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                                  <div className="font-semibold text-slate-900">{address.fullName}</div>
+                                  <div className="text-sm text-slate-600 mt-1">
+                                    <div>{address.addressLine1}</div>
+                                    {address.addressLine2 && <div>{address.addressLine2}</div>}
+                                    <div>{address.city}, {address.district} {address.zipCode}</div>
+                                    {address.phoneNumber && <div>Phone: {address.phoneNumber}</div>}
+                                  </div>
+                                  {address.isDefault && (
+                                    <div className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-2">
+                                      Default
+                                    </div>
+                                  )}
+                                </div>
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Store Pickup Instructions */}
+                  {shippingMethod === "pickup" && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3 text-xs text-green-800">
+                      <strong>Opening Hours:</strong> Monday-Saturday, 9:00 AM - 6:00 PM<br />
+                      <strong>Contact:</strong> 0729557537<br /><br />
+                      Please bring your order confirmation and ID when collecting your order.
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -286,7 +366,7 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <span className="block font-semibold text-slate-900">SWIFT Code</span>
-                      <span>HNBLKLC</span>
+                      <span>HBLILKLX</span>
                     </div>
                     <div>
                       <span className="block font-semibold text-slate-900">Reference</span>
@@ -295,7 +375,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-xs text-blue-800">
-                    After payment, email the slip to <strong>roboclub.main@gmail.com</strong> or upload it in your account order details page.
+                    After payment, email the slip to <strong>roboclub.main@gmail.com</strong> or send via WhatsApp to <strong>0729557537</strong>
                   </div>
                 </CardContent>
               </Card>
@@ -334,7 +414,10 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-600">Shipping</span>
-                          <span>{shipping === 0 ? "Free" : `LKR ${shipping.toFixed(2)}`}</span>
+                          <span>
+                            {shippingMethod === "pickmeflash" ? "Paid by customer" : 
+                             shipping === 0 ? "Free" : `LKR ${shipping.toFixed(2)}`}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-600">Tax</span>
@@ -350,7 +433,7 @@ export default function CheckoutPage() {
                         type="submit" 
                         className="w-full" 
                         size="lg"
-                        disabled={isLoading || cartItems.length === 0 || !selectedAddressId}
+                        disabled={isLoading || cartItems.length === 0 || (shippingMethod !== "pickup" && !selectedAddressId)}
                       >
                         {isLoading ? 'Processing...' : 'Place Order'}
                       </Button>

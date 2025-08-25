@@ -83,12 +83,12 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                       >
                         <CardContent className="p-2">
                           <Link href={`/products/product/${(product as any).slug || product.id}`}> 
-                            <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-1 flex items-center justify-center overflow-hidden cursor-pointer" style={{ minHeight: 120, maxHeight: 150 }}>
+                            <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-1 flex items-center justify-center overflow-hidden cursor-pointer" style={{ minHeight: 120, maxHeight: 300 }}>
                               <Image
                                 src={product.image || "/placeholder.svg"}
                                 alt={product.name}
-                                width={120}
-                                height={120}
+                                width={300}
+                                height={300}
                                 unoptimized
                                 className="object-contain group-hover:scale-110 transition-transform duration-300"
                               />
@@ -110,30 +110,9 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                             <p className="text-[11px] text-slate-500 -mt-1 mb-2">Item Code: {(product as any).itemCode}</p>
                           )}
 
-                          <div className="flex items-center mb-2">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3 w-3 ${
-                                    i < Math.floor(product.rating)
-                                      ? "text-yellow-400 fill-current"
-                                      : "text-slate-300"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-xs text-slate-500 ml-1">({product.reviews})</span>
-                          </div>
-
                           <div className="flex items-center justify-between">
                             <span className="text-lg font-bold text-blue-600">LKR {product.price.toFixed(2)}</span>
-                            <AddToCartButton
-                              product={product}
-                              className="rounded-full"
-                              size="sm"
-                              showIcon={false}
-                            />
+                            
                           </div>
                         </CardContent>
                       </Card>

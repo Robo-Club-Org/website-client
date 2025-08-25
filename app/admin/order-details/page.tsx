@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface UIOrderItem {
+  id: string
   name: string
   price: number
   quantity: number
@@ -51,9 +52,11 @@ export default function OrderDetails() {
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<StatusType | "">("")
   const [tracking, setTracking] = useState<string>("")
+  const [editedPrices, setEditedPrices] = useState<Record<string, string>>({})
+  const [savingItems, setSavingItems] = useState<Set<string>>(new Set())
 
-  const loadOrder = async (id: string) => {
-    const data = await authenticatedFetch(`/admin/orders/${id}`)
+  // Helper to normalize API order -> UI order
+  const mapApiOrderToUI = (data: any): UIOrder => {
     const ui: UIOrder = {
       id: data.id,
       customerName: data.user?.name || "Customer",
@@ -61,26 +64,53 @@ export default function OrderDetails() {
       customerPhone: data.user?.phone ?? null,
       date: data.createdAt ? new Date(data.createdAt).toLocaleString() : "",
       status: data.status,
-      total: data.totalAmount ?? data.items?.reduce((s: number, it: any) => s + (it.price ?? 0) * (it.quantity ?? 0), 0) ?? 0,
+      total:
+        data.totalAmount ??
+        data.items?.reduce(
+          (s: number, it: any) => s + (it.price ?? 0) * (it.quantity ?? 0),
+          0
+        ) ?? 0,
       trackingNumber: data.trackingNumber ?? null,
       items: (data.items || []).map((it: any) => ({
+        id: it.id,
         name: it.product?.name || "Item",
         price: it.price ?? it.product?.price ?? 0,
         quantity: it.quantity ?? 1,
-        image: (Array.isArray(it.product?.imageUrls) && it.product.imageUrls[0]) || "/placeholder.svg",
+        image:
+          (Array.isArray(it.product?.imageUrls) && it.product.imageUrls[0]) ||
+          "/placeholder.svg",
       })),
-      shipping: data.shippingAddress ? {
-        line1: data.shippingAddress.line1 || data.shippingAddress.addressLine1 || data.shippingAddress.street || undefined,
-        line2: data.shippingAddress.line2 || data.shippingAddress.addressLine2 || undefined,
-        city: data.shippingAddress.city || undefined,
-        state: data.shippingAddress.state || undefined,
-        postalCode: data.shippingAddress.postalCode || data.shippingAddress.zip || undefined,
-        country: data.shippingAddress.country || undefined,
-      } : undefined,
+      shipping: data.shippingAddress
+        ? {
+            line1:
+              data.shippingAddress.line1 ||
+              data.shippingAddress.addressLine1 ||
+              data.shippingAddress.street ||
+              undefined,
+            line2:
+              data.shippingAddress.line2 ||
+              data.shippingAddress.addressLine2 ||
+              undefined,
+            city: data.shippingAddress.city || undefined,
+            state: data.shippingAddress.state || undefined,
+            postalCode:
+              data.shippingAddress.postalCode ||
+              data.shippingAddress.zip ||
+              undefined,
+            country: data.shippingAddress.country || undefined,
+          }
+        : undefined,
     }
+    return ui
+  }
+
+  const loadOrder = async (id: string) => {
+    const data = await authenticatedFetch(`/admin/orders/${id}`)
+    const ui = mapApiOrderToUI(data)
     setOrder(ui)
     setStatus(ui.status as StatusType)
-  setTracking(ui.trackingNumber || "")
+    setTracking(ui.trackingNumber || "")
+    setEditedPrices(Object.fromEntries(ui.items.map((it) => [it.id, it.price.toString()])))
   }
 
   useEffect(() => {
@@ -93,35 +123,13 @@ export default function OrderDetails() {
           setError("Missing order id")
           return
         }
-        const data = await authenticatedFetch(`/admin/orders/${orderId}`)
-        if (ignore) return
-        const ui: UIOrder = {
-          id: data.id,
-          customerName: data.user?.name || "Customer",
-          customerEmail: data.user?.email || "",
-          customerPhone: data.user?.phone ?? null,
-          date: data.createdAt ? new Date(data.createdAt).toLocaleString() : "",
-          status: data.status,
-          total: data.totalAmount ?? data.items?.reduce((s: number, it: any) => s + (it.price ?? 0) * (it.quantity ?? 0), 0) ?? 0,
-          trackingNumber: data.trackingNumber ?? null,
-          items: (data.items || []).map((it: any) => ({
-            name: it.product?.name || "Item",
-            price: it.price ?? it.product?.price ?? 0,
-            quantity: it.quantity ?? 1,
-            image: (Array.isArray(it.product?.imageUrls) && it.product.imageUrls[0]) || "/placeholder.svg",
-          })),
-          shipping: data.shippingAddress ? {
-            line1: data.shippingAddress.line1 || data.shippingAddress.addressLine1 || data.shippingAddress.street || undefined,
-            line2: data.shippingAddress.line2 || data.shippingAddress.addressLine2 || undefined,
-            city: data.shippingAddress.city || undefined,
-            state: data.shippingAddress.state || undefined,
-            postalCode: data.shippingAddress.postalCode || data.shippingAddress.zip || undefined,
-            country: data.shippingAddress.country || undefined,
-          } : undefined,
-        }
-        setOrder(ui)
-        setStatus(ui.status as StatusType)
+  const data = await authenticatedFetch(`/admin/orders/${orderId}`)
+  if (ignore) return
+  const ui = mapApiOrderToUI(data)
+  setOrder(ui)
+  setStatus(ui.status as StatusType)
   setTracking(ui.trackingNumber || "")
+  setEditedPrices(Object.fromEntries(ui.items.map((it) => [it.id, it.price.toString()])))
       } catch (e: any) {
         if (!ignore) setError(e?.message || "Failed to load order")
       } finally {
@@ -145,8 +153,37 @@ export default function OrderDetails() {
         body: JSON.stringify({ status }),
       })
       setOrder({ ...order, status: status as string })
+      
+      // If status was changed to CANCELLED, show a success message about restocking
+      if (status === 'CANCELLED' && order.status !== 'CANCELLED') {
+        alert("Order cancelled successfully. Items have been restocked.");
+      }
     } catch (e: any) {
       alert(e?.message || "Failed to update status")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCancelOrder = async () => {
+    if (!order) return
+    
+    // Ask for confirmation before cancelling
+    if (!confirm("Are you sure you want to cancel this order? The items will be returned to stock.")) {
+      return;
+    }
+    
+    try {
+      setSaving(true)
+      await authenticatedFetch(`/admin/orders/${order.id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status: 'CANCELLED' }),
+      })
+      setOrder({ ...order, status: 'CANCELLED' })
+      setStatus('CANCELLED')
+      alert("Order cancelled successfully. Items have been restocked.");
+    } catch (e: any) {
+      alert(e?.message || "Failed to cancel order")
     } finally {
       setSaving(false)
     }
@@ -165,6 +202,64 @@ export default function OrderDetails() {
       alert(e?.message || "Failed to update tracking number")
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleRemoveItem = async (itemId: string) => {
+    if (!order) return
+    if (!confirm("Remove this item from the order? It will be restocked if the order isn't cancelled.")) return
+    try {
+      setSavingItems(prev => {
+        const next = new Set(prev)
+        next.add(itemId)
+        return next
+      })
+      const updated = await authenticatedFetch(`/admin/orders/${order.id}/items/${itemId}`, {
+        method: "DELETE",
+      })
+      const ui = mapApiOrderToUI(updated)
+      setOrder(ui)
+      setEditedPrices(Object.fromEntries(ui.items.map((it) => [it.id, it.price.toString()])))
+    } catch (e: any) {
+      alert(e?.message || "Failed to remove item")
+    } finally {
+      setSavingItems(prev => {
+        const next = new Set(prev)
+        next.delete(itemId)
+        return next
+      })
+    }
+  }
+
+  const handleSaveItemPrice = async (itemId: string) => {
+    if (!order) return
+    const raw = editedPrices[itemId]
+    const newPrice = raw != null && raw !== "" ? parseFloat(raw) : NaN
+    if (isNaN(newPrice) || newPrice < 0) {
+      alert("Enter a valid non-negative price")
+      return
+    }
+    try {
+      setSavingItems(prev => {
+        const next = new Set(prev)
+        next.add(itemId)
+        return next
+      })
+      const updated = await authenticatedFetch(`/admin/orders/${order.id}/items/${itemId}/price`, {
+        method: "PUT",
+        body: JSON.stringify({ price: newPrice })
+      })
+      const ui = mapApiOrderToUI(updated)
+      setOrder(ui)
+      setEditedPrices(Object.fromEntries(ui.items.map((it) => [it.id, it.price.toString()])))
+    } catch (e: any) {
+      alert(e?.message || "Failed to update price")
+    } finally {
+      setSavingItems(prev => {
+        const next = new Set(prev)
+        next.delete(itemId)
+        return next
+      })
     }
   }
 
@@ -217,6 +312,16 @@ export default function OrderDetails() {
               <Button onClick={handleStatusSave} disabled={saving || status === order.status}>
                 {saving ? "Saving…" : "Save"}
               </Button>
+              {order.status !== 'CANCELLED' && (
+                <Button 
+                  variant="destructive" 
+                  onClick={handleCancelOrder} 
+                  disabled={saving}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  Cancel Order & Restock
+                </Button>
+              )}
             </div>
           </div>
 
@@ -243,14 +348,52 @@ export default function OrderDetails() {
                 <CardTitle>Items</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {order.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-4">
+                {order.status !== 'CANCELLED' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-3 text-sm text-blue-800">
+                    <strong>Note:</strong> Cancelling this order will automatically restock all items.
+                  </div>
+                )}
+                {order.status === 'CANCELLED' && (
+                  <div className="bg-gray-50 border border-gray-200 rounded p-3 mb-3 text-sm text-gray-700">
+                    This order has been cancelled and all items have been restocked.
+                  </div>
+                )}
+                {order.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-slate-100 rounded flex items-center justify-center overflow-hidden">
                       <Image src={item.image} alt={item.name} width={56} height={56} className="object-contain" />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-slate-900">{item.name}</p>
                       <p className="text-sm text-slate-600">Qty: {item.quantity}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                        <label className="text-slate-600">Unit Price (LKR):</label>
+                        <input
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          value={editedPrices[item.id] ?? item.price.toString()}
+                          onChange={(e) => setEditedPrices({ ...editedPrices, [item.id]: e.target.value })}
+                          className="border px-2 py-1 rounded w-32"
+                          disabled={savingItems.has(item.id)}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleSaveItemPrice(item.id)}
+                          disabled={savingItems.has(item.id) || (parseFloat(editedPrices[item.id] ?? `${item.price}`) === item.price)}
+                        >
+                          {savingItems.has(item.id) ? "Saving…" : "Save Price"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRemoveItem(item.id)}
+                          disabled={savingItems.has(item.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                          Remove
+                        </Button>
+                      </div>
                     </div>
                     <div className="text-right">
                       <p className="text-slate-900 font-semibold">LKR {(item.price * item.quantity).toFixed(2)}</p>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Heart, Share2 } from "lucide-react"
+import { Heart, Share2, Minus, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,19 +11,28 @@ import { useCartStore } from "@/lib/cart-store"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/home/Navigation"
 import { Footer } from "@/components/home/Footer"
+import { ProductFAQ } from "@/components/product-faq"
 
-export function ProductDetailContent({ product }: { product: any }) {
+export function ProductDetailContent({ 
+  product,
+  breadcrumb
+}: { 
+  product: any;
+  breadcrumb?: React.ReactNode;
+}) {
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
   const router = useRouter()
   const { addItem } = useCartStore()
 
-  // Normalize stock quantity
-  const stockQty: number = typeof product?.stockQuantity === 'number' ? product.stockQuantity : Number(product?.stockQuantity || 0)
-  const maxQty = stockQty > 0 ? stockQty : 1
+  // Normalize stock quantity (guard against null/undefined/negative)
+  const stockQtyRaw: number = typeof product?.stockQuantity === 'number' ? product.stockQuantity : Number(product?.stockQuantity || 0)
+  const stockQty: number = Number.isFinite(stockQtyRaw) ? Math.max(0, Math.floor(stockQtyRaw)) : 0
+  const inStock = stockQty > 0
+  const maxQty = inStock ? stockQty : 1
 
   const handleBuyNow = async () => {
-    if (!product?.inStock) return
+  if (!inStock) return
     const clampedQty = Math.min(Math.max(1, quantity), maxQty)
     const cartProduct = {
       id: String(product.id || ""),
@@ -47,15 +56,18 @@ export function ProductDetailContent({ product }: { product: any }) {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+        <div className="my-4 md:my-6 bg-white/70 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-sm">
+          {breadcrumb}
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-4">
             <div className="aspect-square bg-white rounded-2xl p-8 flex items-center justify-center">
               <Image
                 src={images[selectedImage] || "/placeholder.svg"}
                 alt={product.name}
-                width={800}
-                height={800}
+                width={1000}
+                height={1000}
                 className="object-contain max-w-full max-h-full"
               />
             </div>
@@ -72,8 +84,8 @@ export function ProductDetailContent({ product }: { product: any }) {
                     <Image
                       src={image || "/placeholder.svg"}
                       alt={`${product.name} ${index + 1}`}
-                      width={80}
-                      height={80}
+                      width={1000}
+                      height={1000}
                       className="object-contain w-full h-full p-2"
                     />
                   </button>
@@ -106,27 +118,56 @@ export function ProductDetailContent({ product }: { product: any }) {
             <div className="border-t border-slate-200 pt-6">
               <div className="flex items-center justify-between mb-6">
                 <span className="text-3xl font-bold text-blue-600">LKR {typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}</span>
-                <Badge variant={product.inStock ? "default" : "destructive"}>
-                  {product.inStock ? "In Stock" : "Out of Stock"}
+                <Badge variant={inStock ? "default" : "destructive"}>
+                  {inStock ? "In Stock" : "Out of Stock"}
                 </Badge>
               </div>
               <div className="flex items-center space-x-4 mb-6">
                 <label className="text-sm font-medium text-slate-700">Quantity:</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={maxQty}
-                  value={quantity}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10)
-                    const clamped = isNaN(value) ? 1 : Math.max(1, Math.min(value, maxQty))
-                    setQuantity(clamped)
-                  }}
-                  onBlur={() => setQuantity((q) => Math.max(1, Math.min(q, maxQty)))}
-                  disabled={!product.inStock}
-                  className="w-24 text-center border rounded-lg h-10 disabled:bg-slate-100"
-                />
-                {product.inStock && (
+                <div className="flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Decrease quantity"
+                    onClick={() => setQuantity((q) => Math.max(1, Math.min(q - 1, maxQty)))}
+                    disabled={!inStock || quantity <= 1}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={quantity}
+                    onFocus={(e) => e.currentTarget.select()}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/[^0-9]/g, "")
+                      if (digits === "") {
+                        // Keep empty edits clamped to min on next blur
+                        setQuantity(1)
+                        return
+                      }
+                      const value = parseInt(digits, 10)
+                      const clamped = Math.max(1, Math.min(value, maxQty))
+                      setQuantity(clamped)
+                    }}
+                    onBlur={() => setQuantity((q) => Math.max(1, Math.min(q, maxQty)))}
+                    disabled={!inStock}
+                    className="mx-2 w-16 text-center border rounded-lg h-10 disabled:bg-slate-100"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Increase quantity"
+                    onClick={() => setQuantity((q) => Math.max(1, Math.min(q + 1, maxQty)))}
+                    disabled={!inStock || quantity >= maxQty}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {inStock && stockQty > 0 && (
                   <span className="text-xs text-slate-500">Only {stockQty} left</span>
                 )}
               </div>
@@ -150,7 +191,7 @@ export function ProductDetailContent({ product }: { product: any }) {
                   className="w-full bg-transparent" 
                   size="lg"
                   onClick={handleBuyNow}
-                  disabled={!product.inStock}
+                  disabled={!inStock}
                 >
                   Buy Now
                 </Button>
@@ -166,6 +207,37 @@ export function ProductDetailContent({ product }: { product: any }) {
               <p className="text-slate-600 leading-relaxed">{product.longDescription}</p>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="mt-8">
+          <Card>
+            <CardContent className="p-6">
+              <ProductFAQ 
+                productName={product.name}
+                category={product.category}
+                brand={typeof product.brand === 'string' ? product.brand : product.brand?.name}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Related products section would go here */}
+        
+        {/* SEO-rich content section */}
+        <div className="mt-8 bg-white p-6 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">About {product.name}</h2>
+          <div className="prose max-w-none text-gray-600">
+            <p>
+              Looking to buy {product.name} in Sri Lanka? RoboClub offers premium quality 
+              {product.category ? ` ${product.category}` : ''} electronics
+              {product.brand ? ` from ${typeof product.brand === 'string' ? product.brand : product.brand.name}` : ''}.
+              We provide island-wide delivery and competitive pricing on all our products.
+            </p>
+            <p className="mt-4">
+              {product.name} is ideal for students, hobbyists, and professionals working on electronic projects
+              in Sri Lanka. Shop online with confidence - all products come with warranty and excellent customer support.
+            </p>
+          </div>
         </div>
       </div>
       

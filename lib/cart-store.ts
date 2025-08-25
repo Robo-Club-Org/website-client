@@ -18,6 +18,9 @@ interface CartStore {
   // Cart drawer UI state
   isCartOpen: boolean
   setCartOpen: (open: boolean) => void
+  // Shipping method
+  shippingMethod: string
+  setShippingMethod: (method: string) => void
   // Cart mutation helpers
   addItem: (product: Omit<CartItem, 'quantity'>, quantity?: number) => Promise<void>
   removeItem: (id: string) => Promise<void>
@@ -38,10 +41,13 @@ export const useCartStore = create<CartStore>()(
       items: [],
       isLoading: false,
       isAuthenticated: false,
-  hasMerged: false,
-  isCartOpen: false,
+      hasMerged: false,
+      isCartOpen: false,
+      shippingMethod: "standard",
 
-  setCartOpen: (open: boolean) => set({ isCartOpen: open }),
+      setShippingMethod: (method: string) => set({ shippingMethod: method }),
+      
+      setCartOpen: (open: boolean) => set({ isCartOpen: open }),
 
       setAuthenticated: (isAuth: boolean) => {
         const { hasMerged } = get();
@@ -331,7 +337,8 @@ export const useCartStore = create<CartStore>()(
     {
       name: 'cart-storage',
       partialize: (state) => ({ 
-        items: state.isAuthenticated ? [] : state.items // Only persist items when not authenticated
+        items: state.isAuthenticated ? [] : state.items, // Only persist items when not authenticated
+        shippingMethod: state.shippingMethod // Always persist shipping method
       }),
     }
   )

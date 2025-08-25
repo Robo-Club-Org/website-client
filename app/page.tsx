@@ -8,8 +8,6 @@ import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { Footer } from "@/components/home/Footer"
 import { brands ,  mockProducts } from "@/lib/constants" 
 import Image from "next/image"
-import gif from "../public/Spinner.gif"
-
 
 import type { Product as FeaturedCardProduct } from "@/lib/constants"
 
